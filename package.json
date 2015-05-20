@@ -1,0 +1,19 @@
+{
+  "name": "phoenix.js",
+  "version": "0.1.0",
+  "description": "Phoenix Hexapod Animation Example",
+  "main": "phoenix.js",
+  "dependencies": {
+    "temporal": "^0.3.8",
+    "johnny-five": "^0.8.14",
+    "underscore": "^1.7.0",
+    "leapjs": "^0.6.2",
+    "vektor": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Donovan Buck <donovan@donovan.bz>",
+  "license": "ISC"
+}
