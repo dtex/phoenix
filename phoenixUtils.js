@@ -15,42 +15,21 @@ module.exports = {
   findValidAngle: function(angle, range) {
     var degrees = this.radToDeg(angle);
     var quadrant = 1;
+
     if (degrees > range[1] || degrees < range[0]) {
 
-      // Solution is in quadrant 4... switch to quadrant 2
-      if (degrees < 0 && degrees >= -90) {
-        if (180 + degrees <= range[1] && 180 + degrees >= range[0]) {
-          degrees = 180 + degrees;
-          return degrees;
-        }
-        if (180 - degrees <= range[1] && 180 - degrees >= range[0]) {
-          degrees = 180 - degrees;
-          return degrees;
-        }
-      }
-
-      // Solution is in quadrant 1... switch to quadrant 3
-      if (degrees >= 0 && degrees <= 90) {
-        if (180 + degrees <= range[1] && 180 + degrees >= range[0]) {
-          degrees = 180 + degrees;
-        }
+      // Try adding 180
+      if (degrees + 180 >= range[0] && degrees + 180 <= range[1]) {
+        degrees = degrees + 180;
         return degrees;
       }
 
-      // Solution is in quadrant 2... switch to quadrant 4
-      if (degrees > 90 && degrees <= 180) {
-        if (degrees - 180 <= range[1] && degrees >= range[0] - 180) {
-          degrees = degrees - 180;
-        }
+      // Try subtracting 180
+      if (degrees - 180 >= range[0] && degrees - 180 <= range[1]) {
+        degrees = degrees - 180;
         return degrees;
       }
-
-      /*if (degrees < 180) {
-        degrees = 180 - degrees;
-      } else {
-        degrees = 360 - (degrees - 180);
-      }*/
-      //console.log("miss", degrees, range);
+      return false;
     }
 
     return degrees;
@@ -62,8 +41,10 @@ module.exports = {
   },
 
   fmap: function(value, fromLow, fromHigh, toLow, toHigh) {
-    return (value - fromLow) * (toHigh - toLow) /
-      (fromHigh - fromLow) + toLow;
+    return constrain(
+      (value - fromLow) * (toHigh - toLow) /
+        (fromHigh - fromLow) + toLow,
+      toLow, toHigh);
   },
 
   constrain: function(value, lower, upper) {

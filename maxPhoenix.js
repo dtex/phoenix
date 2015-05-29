@@ -41,13 +41,34 @@ phoenix.bones.TIBSQ = Math.pow(phoenix.bones.TIBIA, 2);
 phoenix.bones.TIBFEMx2 = 2 * phoenix.bones.TIBIA * phoenix.bones.FEMUR;
 
 var legsRender = function( position, progress ) {
+
+  var invalid = false;
+
+  // Solve all our angles
   for (i = 0; i < this.length; i++) {
-    this[String(i)][five.Animation.render]( position[i], progress );
+    if (i <= 1) this[String(i)][five.Animation.render]( position[i], progress, i );
+  }
+
+  // Make sure all the angles are valid
+  for (i = 0; i <= 1; i++) {
+    for (j = 0; j < 3; j++) {
+      if(this[i].angles[j] === false) {
+        //invalid = true;
+      }
+    }
+  }
+
+  for (i = 0; i < this.length; i++) {
+    if (!invalid && i=== 0) {
+      this[i][0].to(this[i].angles[0]);
+      this[i][1].to(this[i].angles[1]);
+      this[i][2].to(this[i].angles[2]);
+    }
   }
 };
 
 var whiles = 0;
-var legRender = function( position, progress ) {
+var legRender = function( position, progress, index ) {
   var leg = this;
   var pos = position;
   var invalid = false;
@@ -65,9 +86,6 @@ var legRender = function( position, progress ) {
 
   pos = [pos[0] - leg.origin[0], pos[1] - leg.origin[1], pos[2] - leg.origin[2]];
 
-  var coxaAngle = Math.atan(pos[2]/pos[0]);
-  var coxaDegrees = phUtils.findValidAngle(coxaAngle, leg[0].range);
-
   var xd = pos[0];
   var yd = pos[1];
   var zd = pos[2];
@@ -78,32 +96,28 @@ var legRender = function( position, progress ) {
 
   var hypot = Math.sqrt(xd_sq + yd_sq + zd_sq);
   var hypot2d = Math.sqrt(xd_sq + zd_sq);
-  
-  var femurAngle = phUtils.solveAngle(hypot, phoenix.bones.FEMUR, phoenix.bones.TIBIA) + Math.sin(yd/hypot2d);
-  var tibiaAngle = phUtils.solveAngle(phoenix.bones.FEMUR, phoenix.bones.TIBIA, hypot);
 
-  if (isNaN(femurAngle) || isNaN(tibiaAngle)) {
-    invalid = true;
+  var coxaAngle = Math.atan(pos[2]/pos[0]);
+  var coxaDegrees = phUtils.findValidAngle(coxaAngle, leg[0].range, true);
+
+  if (index % 2 === 1) {
+    phoenix.bones.FEMUR *= -1;
   }
 
+  var femurAngle = phUtils.solveAngle(phoenix.bones.FEMUR, hypot, phoenix.bones.TIBIA);
+
+  angleRads.update(femurAngle);
+  //if (index % 2 === 1) {
+    femurAngle -= Math.sin(yd/hypot2d);
+  //} else {
+  //  femurAngle += Math.sin(yd/hypot2d);
+//  }
   var femurDegrees = phUtils.findValidAngle(femurAngle, leg[1].range);
+
+  var tibiaAngle = phUtils.solveAngle(phoenix.bones.FEMUR, phoenix.bones.TIBIA, hypot);
   var tibiaDegrees = phUtils.findValidAngle(tibiaAngle, leg[2].range);
 
-  if (coxaDegrees > 360 || femurDegrees > 360 || tibiaDegrees > 360) {
-    invalid = true;
-  }
-
-  if (coxaDegrees < -360 || femurDegrees < -360 || tibiaDegrees < -360) {
-    invalid = true;
-  }
-
-  if (!invalid) {
-    leg[0].to(coxaDegrees);
-    leg[1].to(femurDegrees);
-    leg[2].to(tibiaDegrees);
-    console.log(coxaDegrees, femurDegrees, tibiaDegrees);
-
-  }
+  leg.angles = [coxaDegrees, femurDegrees, tibiaDegrees];
 
 };
 
@@ -232,35 +246,24 @@ Leap.loop({enableGestures: true}, function(frame) {
   if (frame.hands.length === 1) {
     if (!phoenix.locked) {
 
-      phoenix.height = frame.hands[0].palmPosition[1];
-      phoenix.height = [
-        [50, 200, 0, 3],
-        [200, 400, 3, 10],
-        [400, Number.POSITIVE_INFINITY, 10, 10]
-      ].reduce(function(pVal, cVal) {
-        if (frame.hands[0].palmPosition[1] >= cVal[0] && frame.hands[0].palmPosition[1] <= cVal[1] ) {
-          return phUtils.fmap(phoenix.height, cVal[0], cVal[1], cVal[2], cVal[3]);
-        } else {
-          return pVal;
-        }
-      }, 0);
+      phoenix.height = phUtils.fmap(frame.hands[0].palmPosition[1], 50, 400, 0, 10);
 
-      phoenix.xShift = phUtils.gapmap(frame.hands[0].palmPosition[0], [-100, -15, -8, 0], 0, [15, 100, 0, 8]);
-      phoenix.zShift = phUtils.gapmap(frame.hands[0].palmPosition[2], [-100, -15, -8, 0], 0, [15, 100, 0, 8]);
+      phoenix.xShift = phUtils.fmap(frame.hands[0].palmPosition[0], -100, 100, -8, 8);
+      phoenix.zShift = phUtils.fmap(frame.hands[0].palmPosition[2], -50, 50, -4.5, 4.5);
 
-      phoenix.xMove = phUtils.gapmap(frame.hands[0].palmPosition[0], [-200, -100, -1, 0], 0, [100, 200, 0, 1]);
-      phoenix.zMove = phUtils.gapmap(frame.hands[0].palmPosition[2], [-200, -100, -1, 0], 0, [100, 200, 0, 1]);
+      //phoenix.xMove = phUtils.gapmap(frame.hands[0].palmPosition[0], [-200, 200, -1, 1]);
+      //phoenix.zMove = phUtils.gapmap(frame.hands[0].palmPosition[2], [-200, -100, -1, 0], 0, [100, 200, 0, 1]);
 
-      phoenix.pitch = phUtils.gapmap(frame.hands[0].pitch(), [-0.75, -0.15, -0.25, 0], 0, [0.15, 0.75, 0, 0.25]);
-      phoenix.roll = phUtils.gapmap(frame.hands[0].roll(), [-0.75, -0.15, -0.25, 0], 0, [0.15, 0.75, 0, 0.25]);
-      phoenix.yaw = phUtils.gapmap(frame.hands[0].yaw(), [-0.75, -0.15, -0.25, 0], 0, [0.15, 0.75, 0, 0.25]);
+      phoenix.pitch = phUtils.fmap(frame.hands[0].pitch(), -0.75, 0.75, -0.25, 0.25);
+      phoenix.roll = phUtils.fmap(frame.hands[0].roll(), -0.75, 0.75, -0.25, 0.25);
+      phoenix.yaw = phUtils.fmap(frame.hands[0].yaw(), -0.75, 0.75, -0.25, 0.25);
 
       heightMeter.update(phoenix.height);
       xMeter.update(phoenix.xShift);
       zMeter.update(phoenix.zShift);
 
-      xMove.update(phoenix.xMove);
-      zMove.update(phoenix.zMove);
+      //xMove.update(phoenix.xMove);
+      //zMove.update(phoenix.zMove);
 
       yawMeter.update(phoenix.yaw);
       rollMeter.update(phoenix.roll);
@@ -278,11 +281,14 @@ Leap.loop({enableGestures: true}, function(frame) {
 
 var heightMeter = new Barcli({label: "Height", range: [0, 10], precision: 4});
 var xMeter = new Barcli({label: "X Offset", range: [-8, 8], constrain: true, precision: 4 });
-var zMeter = new Barcli({label: "Z Offset", range: [-8, 8], constrain: true, precision: 4 });
+var zMeter = new Barcli({label: "Z Offset", range: [-4.5, 4.5], constrain: true, precision: 4 });
 
-var xMove = new Barcli({label: "X Move", range: [-1, 1], constrain: true, precision: 4 });
-var zMove = new Barcli({label: "Z Move", range: [-1, 1], constrain: true, precision: 4 });
+//var xMove = new Barcli({label: "X Move", range: [-1, 1], constrain: true, precision: 4 });
+//var zMove = new Barcli({label: "Z Move", range: [-1, 1], constrain: true, precision: 4 });
 
 var yawMeter = new Barcli({label: "Yaw", range: [-0.25, 0.25], precision: 4});
 var rollMeter = new Barcli({label: "Roll", range: [-0.25, 0.25], precision: 4});
 var pitchMeter = new Barcli({label: "Pitch", range: [-0.25, 0.25], precision: 4});
+
+var angleDegrees = new Barcli({label: "Degrees", range: [-360, 360], precision: 4});
+var angleRads = new Barcli({label: "Rads", range: [-3, 3], precision: 4});
