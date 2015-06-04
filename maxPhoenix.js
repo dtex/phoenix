@@ -2,11 +2,9 @@ var five = require("johnny-five"),
   keypress = require("keypress"),
   Barcli = require("barcli"),
   StateMachine = require("javascript-state-machine"),
-  vector = require("vektor").vector,
-  rotate = require("vektor").rotate,
-  matrix = require("vektor").matrix,
   Leap = require("leapjs"),
-  phUtils = require("./phoenixUtils.js");
+  phUtils = require("./phoenixUtils.js"),
+  render = require("./legRender.js");
 
 var phoenix = {
   state: StateMachine.create({
@@ -46,7 +44,7 @@ var legsRender = function( position, progress ) {
 
   // Solve all our angles
   for (i = 0; i < this.length; i++) {
-    if (i <= 1) this[String(i)][five.Animation.render]( position[i], progress, i );
+    if (i <= 1) this[String(i)][five.Animation.render]( phoenix, this[i]. position[i], progress, i );
   }
 
   // Make sure all the angles are valid
@@ -68,58 +66,8 @@ var legsRender = function( position, progress ) {
 };
 
 var whiles = 0;
-var legRender = function( position, progress, index ) {
-  var leg = this;
-  var pos = position;
-  var invalid = false;
-  var posMatrix = new matrix(1,3);
-  posMatrix.m = pos;
 
-  var posVector = new vector(pos);
-  var rotationMatrix = new rotate.RotZ(phoenix.roll);
-  posVector = rotationMatrix.dot(posVector);
-  rotationMatrix = new rotate.RotX(phoenix.pitch);
-  posVector = rotationMatrix.dot(posVector);
-  rotationMatrix = new rotate.RotY(phoenix.yaw);
-  posVector = rotationMatrix.dot(posVector);
-  pos = posVector.v;
 
-  pos = [pos[0] - leg.origin[0], pos[1] - leg.origin[1], pos[2] - leg.origin[2]];
-
-  var xd = pos[0];
-  var yd = pos[1];
-  var zd = pos[2];
-
-  var xd_sq = xd * xd;
-  var yd_sq = yd * yd;
-  var zd_sq = zd * zd;
-
-  var hypot = Math.sqrt(xd_sq + yd_sq + zd_sq);
-  var hypot2d = Math.sqrt(xd_sq + zd_sq);
-
-  var coxaAngle = Math.atan(pos[2]/pos[0]);
-  var coxaDegrees = phUtils.findValidAngle(coxaAngle, leg[0].range, true);
-
-  if (index % 2 === 1) {
-    phoenix.bones.FEMUR *= -1;
-  }
-
-  var femurAngle = phUtils.solveAngle(phoenix.bones.FEMUR, hypot, phoenix.bones.TIBIA);
-
-  angleRads.update(femurAngle);
-  //if (index % 2 === 1) {
-    femurAngle -= Math.sin(yd/hypot2d);
-  //} else {
-  //  femurAngle += Math.sin(yd/hypot2d);
-//  }
-  var femurDegrees = phUtils.findValidAngle(femurAngle, leg[1].range);
-
-  var tibiaAngle = phUtils.solveAngle(phoenix.bones.FEMUR, phoenix.bones.TIBIA, hypot);
-  var tibiaDegrees = phUtils.findValidAngle(tibiaAngle, leg[2].range);
-
-  leg.angles = [coxaDegrees, femurDegrees, tibiaDegrees];
-
-};
 
 var board = new five.Board().on("ready", function() {
 
@@ -166,12 +114,12 @@ var board = new five.Board().on("ready", function() {
   phoenix.legs = new five.Servo.Array([phoenix.r1, phoenix.l1, phoenix.r2, phoenix.l2, phoenix.r3, phoenix.l3]);
   phoenix.legs[five.Animation.render] = legsRender;
 
-  phoenix.r1[five.Animation.render] = legRender;
-  phoenix.r2[five.Animation.render] = legRender;
-  phoenix.r3[five.Animation.render] = legRender;
-  phoenix.l1[five.Animation.render] = legRender;
-  phoenix.l2[five.Animation.render] = legRender;
-  phoenix.l3[five.Animation.render] = legRender;
+  phoenix.r1[five.Animation.render] = render.leg;
+  phoenix.r2[five.Animation.render] = render.leg;
+  phoenix.r3[five.Animation.render] = render.leg;
+  phoenix.l1[five.Animation.render] = render.leg;
+  phoenix.l2[five.Animation.render] = render.leg;
+  phoenix.l3[five.Animation.render] = render.leg;
 
   phoenix.r1.origin = [4.25, 2.875, 8.15];
   phoenix.l1.origin = [-4.25, 2.875, 8.15];
