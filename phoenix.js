@@ -23,7 +23,7 @@
   easeInOut = "inOutQuad",
   framerate = 60,
   gaits = ["row", "crawl", "walk", "run"],
-  gait = 0,
+  gait = 2,
   gestureID = 0,
 
   // This object describes the "leg lift" used in walking
