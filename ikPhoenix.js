@@ -21,7 +21,7 @@ var board = new five.Board().on("ready", function() {
   var r1 = new Tharp.Chain({
     chainType: "ZYY",
     origin: [4.25, 8.15, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [11.25, 12.15, 0],
     constructor: five.Servos,
     actuators: [
@@ -41,7 +41,7 @@ var board = new five.Board().on("ready", function() {
     ],
     chainType: "ZYY",
     origin: [-4.25, 8.15, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [-11.25, 12.15, 0]
   });
 
@@ -55,7 +55,7 @@ var board = new five.Board().on("ready", function() {
     ],
     chainType: "ZYY",
     origin: [6.25, 0, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [14.25, 0.1, 0]
   });
 
@@ -69,7 +69,7 @@ var board = new five.Board().on("ready", function() {
     ],
     chainType: "ZYY",
     origin: [-6.25, 0, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [ -14.25, 0.1, 0 ]
   });
 
@@ -83,7 +83,7 @@ var board = new five.Board().on("ready", function() {
     ],
     chainType: "ZYY",
     origin: [4.25, -8.15, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [ 11.25, -12, 0]
   });
 
@@ -97,7 +97,7 @@ var board = new five.Board().on("ready", function() {
     ],
     chainType: "ZYY",
     origin: [-4.25, -8.15, 2.875],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
     startAt: [ -11.25, -12, 0 ]
   });
 
@@ -152,7 +152,7 @@ var board = new five.Board().on("ready", function() {
 
     var x = fmap(hand.palmPosition[0], -100, 100, -4, 4);
     var y = fmap(hand.palmPosition[2]*-1, -50, 50, -4, 1.5);
-    var z = fmap(hand.palmPosition[1], 50, 400, -2, 5.5);
+    var z = fmap(hand.palmPosition[1], 50, 400, -2, 4);
 
     phoenix.height = z;
 
@@ -167,7 +167,7 @@ var board = new five.Board().on("ready", function() {
 
       phoenix.offset = [x, y, z];
 
-      phoenix.orientation.pitch = fmap(hand.pitch(), 0.5, -0.5, -0.50, 0.5);
+      phoenix.orientation.pitch = fmap(hand.pitch(), 0.5, -0.1, -0.30, 0.1);
       phoenix.orientation.roll = fmap(hand.roll() * -1, 0.75, -0.75, -0.35, 0.35);
       phoenix.orientation.yaw = fmap(hand.yaw(), 0.5, -0.5, -0.3, 0.3) * -1;
     }
@@ -284,22 +284,26 @@ var board = new five.Board().on("ready", function() {
 
   Leap.loop({enableGestures: false}, function(frame) {
 
-    if (phoenix.height < -0.1 && phoenix.orientation.pitch < 0.4) {
+    if (phoenix.height < -0.1 && phoenix.orientation.pitch < -0.49 && true === false) {
       if (phoenix.state.can("point") ) {
         locked = true;
         phoenix.state.point();
       }
     }
 
-    if (phoenix.state.current === "pointing" && !locked && frame.hands.length > 0) {
-      if (frame.hands[0].grabStrength > 0.9) {
+    if (phoenix.state.current === "pointing" && !locked && frame.hands.length > 0 && true === false) {
+      if (phoenix.orientation.pitch > 0.3   ) {
 
         if (phoenix.state.can("unpoint")) {
           locked = true;
           phoenix.state.unpoint();
         }
       } else {
-        var right = frame.hands[0].indexFinger.tipPosition;
+        var left = frame.hands[0].indexFinger.tipPosition;
+        var right = frame.hands[0].pinky.tipPosition;
+
+        leftMeter.update(left[0]);
+        rightMeter.update(right[0]);
 
         bootyShake(frame.hands[0]);
         rightMeter.update(right[0]);
@@ -308,9 +312,14 @@ var board = new five.Board().on("ready", function() {
         phoenix["@@render"](
           [
             [
-              fmap(right[0], 50, 80, 8, 19 ),
-              fmap(right[1], 55, 330, 0, 19),
-              fmap(right[2], -10, -130, 15, 22)
+              fmap(right[0], 20, 70, 9, 14 ),
+              fmap(right[1], 55, 330, 14, 14),
+              fmap(right[2], -10, -130, 11, 17)
+            ],
+            [
+              fmap(left[0], -20, -70, -9, -13 ),
+              fmap(left[1], 55, 330, 15, 15),
+              fmap(left[2], -10, -130, 11, 17)
             ]
           ]
         );
@@ -344,7 +353,7 @@ var board = new five.Board().on("ready", function() {
         if (phoenix.state.current === "walking" || phoenix.state.current === "awake") {
           bootyShake(frame.hands[0]);
           phoenix["@@render"]();
-          GLOBAL.setTimeout(function() {locked = false;}, 20);
+          GLOBAL.setTimeout(function() {locked = false;}, 30);
         }
       }
     }
@@ -353,9 +362,9 @@ var board = new five.Board().on("ready", function() {
 
 });
 
-var yMeter = new Barcli({label: "Height", range: [0, 10], precision: 4});
 var xMeter = new Barcli({label: "X Offset", range: [-8, 8], constrain: true, precision: 4 });
-var zMeter = new Barcli({label: "Z Offset", range: [-4.5, 4.5], constrain: true, precision: 4 });
+var yMeter = new Barcli({label: "Y Offset", range: [0, 10], precision: 4});
+var zMeter = new Barcli({label: "Height", range: [-4.5, 4.5], constrain: true, precision: 4 });
 
 var yawMeter = new Barcli({label: "Yaw", range: [-0.25, 0.25], precision: 4});
 var rollMeter = new Barcli({label: "Roll", range: [-0.25, 0.25], precision: 4});
