@@ -16,7 +16,7 @@
  var five = require("johnny-five"),
   temporal = require("temporal"),
   _ = require("underscore"),
-  Leap = require("leapjs"),
+  //Leap = require("leapjs"),
   board, phoenix = { state: "sleep" },
   easeIn = "inQuad",
   easeOut = "outQuad",
@@ -302,7 +302,7 @@ var board = new five.Board().on("ready", function() {
     cuePoints: [0, 0.071, 0.143, 0.214, 0.286, 0.357, 0.429, 0.5, 0.571, 0.643, 0.714, 0.786, 0.857, 0.929, 1],
     loop: true,
     loopback: 0.5,
-    fps: framerate,
+    fps: 60, //framerate,
     onstop: function() { phoenix.att(); },
     oncomplete: function() { },
     keyFrames: [
@@ -648,90 +648,90 @@ var board = new five.Board().on("ready", function() {
     }
   };
 
-  var controller = new Leap.Controller({enableGestures: true});
-
-  controller.on("frame", function(frame) {
-    if(frame.gestures.length > 0) {
-
-      if(frame.gestures[0].type === "keyTap" && frame.gestures[0].id !== gestureID && phoenix.state !== "pinchers") {
-        gestureID = frame.gestures[0].id;
-        gait++;
-        if (gait === gaits.length) {
-          gait = 0;
-        }
-        blink(gait+1);
-        console.log(gaits[gait]);
-      }
-      //
-      // console.log(phoenix.state);
-      // if(frame.gestures[0].type === "circle" && frame.gestures[0].id !== gestureID && phoenix.state === "stop") {
-      //   gestureID = frame.gestures[0].id;
-      //   phoenix.state = "wave";
-      //   phoenix.waveLeft();
-      // }
-    }
-
-    if (frame.hands.length === 2) {
-      if (phoenix.state !== "pinch" && phoenix.state !== "pinchers") setState('pinch');
-      if (phoenix.state === "pinchers") {
-        phoenix.r1c.to(fmap(frame.hands[0].indexFinger.medial.basis[2][0], 0.6, -0.3, 19, 60));
-        phoenix.l1c.to(fmap(frame.hands[1].indexFinger.medial.basis[2][0], 0.6, -0.3, 60, 19));
-        phoenix.r1f.to(fmap(frame.hands[0].indexFinger.medial.basis[2][1], 1, -0.45, 90, 165));
-        phoenix.l1f.to(fmap(frame.hands[1].indexFinger.medial.basis[2][1], 1, -0.45, 90, 165));
-        phoenix.r1t.to(fmap(frame.hands[0].indexFinger.distal.basis[2][1], 0, 1, 10, 170));
-        phoenix.l1t.to(fmap(frame.hands[1].indexFinger.distal.basis[2][1], 0, 1, 10, 170));
-      }
-    }
-
-    if (frame.hands.length < 2 && phoenix.state === "pinchers") {
-      phoenix.l1c.to(h.f.c[1]);
-      phoenix.r1c.to(h.f.c[1]);
-      phoenix.l1f.to(h.f.f[1]);
-      phoenix.r1f.to(h.f.f[1]);
-      phoenix.l1t.to(h.f.t[1]);
-      phoenix.r1t.to(h.f.t[1]);
-      phoenix.att();
-    }
-
-    if (frame.hands.length === 1) {
-
-      if (frame.hands[0].grabStrength > 0.6) {
-        setState("sleep");
-      } else {
-        if (frame.hands[0].palmPosition[2] > -80 && frame.hands[0].palmPosition[2] < 80) {
-          if (frame.hands[0].direction[0] < -0.4 && frame.hands[0].fingers.length) {
-            setState('left');
-          }
-          if (frame.hands[0].direction[0] > 0.4 && frame.hands[0].fingers.length) {
-            setState('right');
-          }
-          if (frame.hands[0].direction[0] < 0.4 && frame.hands[0].direction[0] > -0.4) {
-            if (phoenix.state === "sleep") {
-              setState('stand');
-            } else {
-              setState('stop');
-            }
-          }
-        } else {
-          if (frame.hands[0].palmPosition[2] > 80 && frame.hands[0].fingers.length === 5) {
-            setState('reverse');
-          }
-          if (frame.hands[0].palmPosition[2] < -80 && frame.hands[0].fingers.length === 5) {
-            setState('forward');
-          }
-        }
-      }
-
-
-    //  console.log(frame.hands[0].direction);
-    }
-
-    if (frame.hands.length === 0 && phoenix.state !== "stand" && phoenix.state !== "sleep") {
-      setState('stop');
-    }
-    //console.log("Frame: " + frame.hands.length);
-  });
-
-  controller.connect();
+  // var controller = new Leap.Controller({enableGestures: true});
+  //
+  // controller.on("frame", function(frame) {
+  //   if(frame.gestures.length > 0) {
+  //
+  //     if(frame.gestures[0].type === "keyTap" && frame.gestures[0].id !== gestureID && phoenix.state !== "pinchers") {
+  //       gestureID = frame.gestures[0].id;
+  //       gait++;
+  //       if (gait === gaits.length) {
+  //         gait = 0;
+  //       }
+  //       blink(gait+1);
+  //       console.log(gaits[gait]);
+  //     }
+  //     //
+  //     // console.log(phoenix.state);
+  //     // if(frame.gestures[0].type === "circle" && frame.gestures[0].id !== gestureID && phoenix.state === "stop") {
+  //     //   gestureID = frame.gestures[0].id;
+  //     //   phoenix.state = "wave";
+  //     //   phoenix.waveLeft();
+  //     // }
+  //   }
+  //
+  //   if (frame.hands.length === 2) {
+  //     if (phoenix.state !== "pinch" && phoenix.state !== "pinchers") setState('pinch');
+  //     if (phoenix.state === "pinchers") {
+  //       phoenix.r1c.to(fmap(frame.hands[0].indexFinger.medial.basis[2][0], 0.6, -0.3, 19, 60));
+  //       phoenix.l1c.to(fmap(frame.hands[1].indexFinger.medial.basis[2][0], 0.6, -0.3, 60, 19));
+  //       phoenix.r1f.to(fmap(frame.hands[0].indexFinger.medial.basis[2][1], 1, -0.45, 90, 165));
+  //       phoenix.l1f.to(fmap(frame.hands[1].indexFinger.medial.basis[2][1], 1, -0.45, 90, 165));
+  //       phoenix.r1t.to(fmap(frame.hands[0].indexFinger.distal.basis[2][1], 0, 1, 10, 170));
+  //       phoenix.l1t.to(fmap(frame.hands[1].indexFinger.distal.basis[2][1], 0, 1, 10, 170));
+  //     }
+  //   }
+  //
+  //   if (frame.hands.length < 2 && phoenix.state === "pinchers") {
+  //     phoenix.l1c.to(h.f.c[1]);
+  //     phoenix.r1c.to(h.f.c[1]);
+  //     phoenix.l1f.to(h.f.f[1]);
+  //     phoenix.r1f.to(h.f.f[1]);
+  //     phoenix.l1t.to(h.f.t[1]);
+  //     phoenix.r1t.to(h.f.t[1]);
+  //     phoenix.att();
+  //   }
+  //
+  //   if (frame.hands.length === 1) {
+  //
+  //     if (frame.hands[0].grabStrength > 0.6) {
+  //       setState("sleep");
+  //     } else {
+  //       if (frame.hands[0].palmPosition[2] > -80 && frame.hands[0].palmPosition[2] < 80) {
+  //         if (frame.hands[0].direction[0] < -0.4 && frame.hands[0].fingers.length) {
+  //           setState('left');
+  //         }
+  //         if (frame.hands[0].direction[0] > 0.4 && frame.hands[0].fingers.length) {
+  //           setState('right');
+  //         }
+  //         if (frame.hands[0].direction[0] < 0.4 && frame.hands[0].direction[0] > -0.4) {
+  //           if (phoenix.state === "sleep") {
+  //             setState('stand');
+  //           } else {
+  //             setState('stop');
+  //           }
+  //         }
+  //       } else {
+  //         if (frame.hands[0].palmPosition[2] > 80 && frame.hands[0].fingers.length === 5) {
+  //           setState('reverse');
+  //         }
+  //         if (frame.hands[0].palmPosition[2] < -80 && frame.hands[0].fingers.length === 5) {
+  //           setState('forward');
+  //         }
+  //       }
+  //     }
+  //
+  //
+  //   //  console.log(frame.hands[0].direction);
+  //   }
+  //
+  //   if (frame.hands.length === 0 && phoenix.state !== "stand" && phoenix.state !== "sleep") {
+  //     setState('stop');
+  //   }
+  //   //console.log("Frame: " + frame.hands.length);
+  // });
+  //
+  // controller.connect();
 
 });

@@ -20,7 +20,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
   var r1 = new Tharp.Chain({
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [4.25, 2.875, 8.15],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [11.25, 0, 12.15],
     constructor: five.Servos,
     actuators: [
@@ -40,7 +40,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
     ],
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [-4.25, 2.875, 8.15],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [-11.25, 0, 12.15]
   });
 
@@ -54,7 +54,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
     ],
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [6.25, 2.875, 0],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [14.25, 0, 0.1]
   });
 
@@ -68,7 +68,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
     ],
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [-6.25, 2.875,  0],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [ -14.25, 0, 0.1 ]
   });
 
@@ -82,7 +82,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
     ],
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [4.25, 2.875, -8.15],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [ 11.25, 0, -12 ]
   });
 
@@ -96,7 +96,7 @@ var board = new five.Board({io: new Tessel()}).on("ready", function() {
     ],
     chainType: "CoxaY-FemurZ-TibiaZ",
     origin: [-4.25, 2.875, -8.15],
-    segments: { femur: 7.6125, tibia: 10.4 },
+    links: { femur: 7.6125, tibia: 10.4 },
     startAt: [ -11.25, 0, -12 ]
   });
 

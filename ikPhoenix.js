@@ -21,7 +21,7 @@ var board = new five.Board().on("ready", function() {
   var r1 = new Tharp.Chain({
     chainType: "ZYY",
     origin: [4.25, 8.15, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
+    links: [ 2.6, 7.6125, 10.4],
     startAt: [11.25, 12.15, 0],
     constructor: five.Servos,
     actuators: [
@@ -34,71 +34,71 @@ var board = new five.Board().on("ready", function() {
   // Left front leg
   var l1 = new Tharp.Chain({
     constructor: five.Servos,
+    chainType: "ZYY",
+    origin: [-4.25, 8.15, 2.875],
+    links: [ 2.6, 7.6125, 10.4],
+    startAt: [-11.25, 12.15, 0],
     actuators: [
       {pin:27, offset: -31, startAt: 149, range: [90, 180] },
       {pin:26, offset: -77, startAt: 102, range: [110, 260] },
       {pin:25, offset: -176, invert: true, startAt: 320, range: [180, 340] }
-    ],
-    chainType: "ZYY",
-    origin: [-4.25, 8.15, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
-    startAt: [-11.25, 12.15, 0]
+    ]
   });
 
   // Right mid leg
   var r2 = new Tharp.Chain({
     constructor: five.Servos,
+    chainType: "ZYY",
+    origin: [6.25, 0, 2.875],
+    links: [ 2.6, 7.6125, 10.4],
+    startAt: [14.25, 0.1, 0],
     actuators: [
       {pin:49, offset: 86, startAt: 0, range: [-60, 60] },
       {pin:48, offset: 78, startAt: 78, range: [-80, 78] },
       {pin:47, offset: 187, invert: true, startAt: -140, range: [-160, -10] }
-    ],
-    chainType: "ZYY",
-    origin: [6.25, 0, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
-    startAt: [14.25, 0.1, 0]
+    ]
   });
 
   // Left mid leg
   var l2 = new Tharp.Chain({
     constructor: five.Servos,
+    chainType: "ZYY",
+    origin: [-6.25, 0, 2.875],
+    links: [ 2.6, 7.6125, 10.4],
+    startAt: [ -14.25, 0.1, 0 ],
     actuators: [
       {pin:23, offset: -84, startAt: 180, range: [120, 240] },
       {pin:21, offset: -76, startAt: 102, range: [100, 260] },
       {pin:20, offset: -185, invert: true, startAt: 320, range: [180, 340] }
-    ],
-    chainType: "ZYY",
-    origin: [-6.25, 0, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
-    startAt: [ -14.25, 0.1, 0 ]
+    ]
   });
 
   // Right rear leg
   var r3 = new Tharp.Chain({
     constructor: five.Servos,
+    chainType: "ZYY",
+    origin: [4.25, -8.15, 2.875],
+    links: [ 2.6, 7.6125, 10.4],
+    startAt: [ 11.25, -12, 0],
     actuators: [
       {pin:45, offset: 155, startAt: 0, range: [-90, 0] },
       {pin:44, offset: 79, startAt: 78, range: [-80, 78] },
       {pin:43, offset: 185, invert: true, startAt: -140, range: [-160, -10] }
-    ],
-    chainType: "ZYY",
-    origin: [4.25, -8.15, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
-    startAt: [ 11.25, -12, 0]
+    ]
   });
 
   // Left rear leg
   var l3 = new Tharp.Chain({
     constructor: five.Servos,
+    chainType: "ZYY",
+    origin: [-4.25, -8.15, 2.875],
+    links: [ 2.6, 7.6125, 10.4],
+    startAt: [ -11.25, -12, 0 ],
     actuators: [
       {pin:19, offset: -141, startAt: 180, range: [161, 235] },
       {pin:18, offset: -83, startAt: 102, range: [110, 260] },
       {pin:17, offset: -182, invert: true, startAt: 320, range: [180, 340] }
-    ],
-    chainType: "ZYY",
-    origin: [-4.25, -8.15, 2.875],
-    segments: { coxa: 2.6, femur: 7.6125, tibia: 10.4 },
-    startAt: [ -11.25, -12, 0 ]
+    ]
   });
 
   var phoenix = new Tharp.Robot({

@@ -4,12 +4,12 @@
   "description": "Phoenix Hexapod Animation Example",
   "main": "phoenix.js",
   "dependencies": {
+    "barcli": "latest",
+    "javascript-state-machine": "latest",
     "johnny-five": "latest",
     "leapjs": "latest",
     "tharp": "latest",
-    "barcli": "latest",
-    "javascript-state-machine": "latest"
-
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "scripts": {
